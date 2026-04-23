@@ -5,17 +5,13 @@ import base64
 import time
 
 # NOVA FORMA DE CONEXÃO (Sem depender da biblioteca que dá erro)
-def carregar_dados_planilha():
+def get_video_base64(file_path):
     try:
-        # Pega a URL dos Secrets
-        url = st.secrets["connections"]["gsheets"]["spreadsheet"]
-        # Transforma a URL de visualização em URL de exportação CSV
-        csv_url = url.replace('/edit?usp=sharing', '/gviz/tq?tqx=out:csv')
-        csv_url = csv_url.replace('/edit#gid=', '/gviz/tq?tqx=out:csv&gid=')
-        return csv_url
+        with open(file_path, "rb") as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
     except:
-        return None
-
+        return ""
 # --- CONFIGURAÇÕES DE PÁGINA ---
 st.set_page_config(page_title="ANALISTERO - IFCE", layout="centered")
         return base64.b64encode(data).decode()
