@@ -3,7 +3,7 @@ import pandas as pd
 import math
 import base64
 import time
-from st_gsheets_connection import GSheetsConnection
+from streamlit_gsheets_connection import GSheetsConnection
 
 # --- CONFIGURAÇÕES DE PÁGINA ---
 st.set_page_config(page_title="ANALISTERO - IFCE", layout="centered")
