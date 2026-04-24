@@ -47,9 +47,12 @@ with st.sidebar:
     c_num, c_ops = st.columns([2, 2])
     with c_num:
         cols = st.columns(3)
-        for i, n in enumerate(["1","2","3","4","5","6","7","8","9"]):
-            if cols[i%3].button(n): st.session_state.visor_calc += n; st.rerun()
-        if st.columns(3)[1].button("0"): st.session_state.visor_calc += "0"; st.rerun()
+        # Adicionado o botão de ponto decimal aqui
+        botoes_num = ["1","2","3","4","5","6","7","8","9",".","0"]
+        for i, n in enumerate(botoes_num):
+            if cols[i%3].button(n): 
+                st.session_state.visor_calc += n
+                st.rerun()
     with c_ops:
         o = st.columns(3)
         ops = [("+","+"), ("-","-"), ("*","*"), ("/","/"), ("√","sqrt("), ("x²","**2"), ("(","("), ("%", "/100"), (")",")")]
@@ -57,8 +60,11 @@ with st.sidebar:
             if o[i%3].button(label): st.session_state.visor_calc += val; st.rerun()
         if st.button("C", use_container_width=True): st.session_state.visor_calc = ""; st.rerun()
     if st.button("=", use_container_width=True):
-        try: st.session_state.visor_calc = str(round(eval(st.session_state.visor_calc.replace("sqrt", "math.sqrt")), 4))
-        except: st.session_state.visor_calc = "Erro"
+        try: 
+            # Permite calcular expressões com ponto decimal
+            st.session_state.visor_calc = str(round(eval(st.session_state.visor_calc.replace("sqrt", "math.sqrt")), 4))
+        except: 
+            st.session_state.visor_calc = "Erro"
         st.rerun()
 
 # --- LÓGICA DE FEEDBACK ---
@@ -130,7 +136,7 @@ elif st.session_state.fase == 5:
 elif st.session_state.fase == 6:
     st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se Desvio Padrão é quando todos os dados das amostras tem alguma distância do valor médio do conjunto. A fórmula é dada por s = √ ( valor da amostra - valor médio)² / número de amostras - 1.<br><br>passo 1: após identificar dos dados, calcule a média. passo 2: para a cada amostra ( valor das amostras - valor médio)² passo 3: divida pelo número de amostras -1. passo 4: tire a raiz, prontinho.</div>', unsafe_allow_html=True)
     st.markdown('<div class="box-enunciado"><b>6° questão:</b> desafio: As análises de várias preparações alimentares envolvendo a determinação de potássio geraram os seguintes dados: 1 analista descobriu os seguintes valores 5,15, 5,03, 5,04, 5,18, 5,20.</div>', unsafe_allow_html=True)
-    res = st.text_input("Resultado (Ex: 0.08):")
+    res = st.text_input("Resultado (Ex: 0.08):").replace(",", ".")
     if st.button("VERIFICAR"):
         if "0.08" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
@@ -139,7 +145,7 @@ elif st.session_state.fase == 6:
 elif st.session_state.fase == 7:
     st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se Desvio Padrão é quando todos os dados das amostras tem alguma distância do valor médio do conjunto. A fórmula é dada por s = √ ( valor da amostra - valor médio)² / número de amostras - 1.<br><br>passo 1: após identificar dos dados, calcule a média. passo 2: para cada amostra ( valor das amostras - valor médio)² passo 3: divida pelo número de amostras -1. passo 4: tire a raiz, prontinho.</div>', unsafe_allow_html=True)
     st.markdown('<div class="box-enunciado"><b>7° questão:</b> desafio: As análises de várias preparações alimentares envolvendo a determinação de potássio geraram os seguintes dados: 1 analista descobriu os seguintes valores 7,18; 7,17; 6,97 (mg/L).</div>', unsafe_allow_html=True)
-    res = st.text_input("Resultado (Ex: 0.11):")
+    res = st.text_input("Resultado (Ex: 0.11):").replace(",", ".")
     if st.button("VERIFICAR"):
         if "0.11" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
@@ -148,7 +154,7 @@ elif st.session_state.fase == 7:
 elif st.session_state.fase == 8:
     st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se Variança é quando todos os dados das amostras tem alguma distância do valor médio do conjunto. Qual a diferença entre o desvio padrão? apenas não tem mais raiz. Para o tratamento estatístico ela é melhor.<br><br>passo 1: após identificar dos dados, calcule a média. passo 2: para cada amostra ( valor das amostras - valor médio)² passo 3: divida pelo número de amostras -1.</div>', unsafe_allow_html=True)
     st.markdown('<div class="box-enunciado"><b>8° questão:</b> Usando os dados da questão anterior (7,18; 7,17; 6,97), calcule a variância.</div>', unsafe_allow_html=True)
-    res = st.text_input("Resultado (Ex: 0.014):")
+    res = st.text_input("Resultado (Ex: 0.014):").replace(",", ".")
     if st.button("VERIFICAR"):
         if "0.01" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
