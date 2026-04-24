@@ -1,17 +1,6 @@
 import streamlit as st
-import pandas as pd
 import math
-import base64
-import time
-
-# --- FUNÇÕES AUXILIARES ---
-def get_video_base64(file_path):
-    try:
-        with open(file_path, "rb") as f:
-            data = f.read()
-        return base64.b64encode(data).decode()
-    except:
-        return ""
+import os
 
 # --- CONFIGURAÇÕES DE PÁGINA ---
 st.set_page_config(page_title="ANALISTERO - IFCE", layout="centered")
@@ -21,11 +10,6 @@ if 'pontos' not in st.session_state: st.session_state.pontos = 0
 if 'fase' not in st.session_state: st.session_state.fase = 0  
 if 'feedback' not in st.session_state: st.session_state.feedback = None
 if 'visor_calc' not in st.session_state: st.session_state.visor_calc = ""
-
-# Carregamento dos vídeos
-if 'pos_b64' not in st.session_state:
-    st.session_state.pos_b64 = get_video_base64("midiapositiva.mp4")
-    st.session_state.neg_b64 = get_video_base64("midianegativa.mp4")
 
 # --- ESTILO CSS ---
 st.markdown("""
@@ -44,24 +28,28 @@ with st.sidebar:
     st.write("---")
     st.markdown("### CALCULADORA")
     st.markdown(f'<div class="visor-verde">{st.session_state.visor_calc or "0"}</div>', unsafe_allow_html=True)
+    
     c_num, c_ops = st.columns([2, 2])
     with c_num:
         cols = st.columns(3)
-        # Adicionado o botão de ponto decimal aqui
         botoes_num = ["1","2","3","4","5","6","7","8","9",".","0"]
         for i, n in enumerate(botoes_num):
-            if cols[i%3].button(n): 
+            if cols[i%3].button(n, key=f"btn_{n}"): 
                 st.session_state.visor_calc += n
                 st.rerun()
     with c_ops:
         o = st.columns(3)
         ops = [("+","+"), ("-","-"), ("*","*"), ("/","/"), ("√","sqrt("), ("x²","**2"), ("(","("), ("%", "/100"), (")",")")]
         for i, (label, val) in enumerate(ops):
-            if o[i%3].button(label): st.session_state.visor_calc += val; st.rerun()
-        if st.button("C", use_container_width=True): st.session_state.visor_calc = ""; st.rerun()
+            if o[i%3].button(label, key=f"op_{label}"): 
+                st.session_state.visor_calc += val
+                st.rerun()
+        if st.button("C", use_container_width=True): 
+            st.session_state.visor_calc = ""
+            st.rerun()
+    
     if st.button("=", use_container_width=True):
         try: 
-            # Permite calcular expressões com ponto decimal
             st.session_state.visor_calc = str(round(eval(st.session_state.visor_calc.replace("sqrt", "math.sqrt")), 4))
         except: 
             st.session_state.visor_calc = "Erro"
@@ -70,10 +58,14 @@ with st.sidebar:
 # --- LÓGICA DE FEEDBACK ---
 if st.session_state.feedback:
     cor = "#28a745" if st.session_state.feedback == "positivo" else "#dc3545"
-    video = st.session_state.pos_b64 if st.session_state.feedback == "positivo" else st.session_state.neg_b64
     st.markdown(f"<h1 style='text-align:center; color:{cor};'>{'VOCÊ ACERTOU!' if cor=='#28a745' else 'TENTE NOVAMENTE!'}</h1>", unsafe_allow_html=True)
-    if video:
-        st.markdown(f'<div style="text-align:center;"><video width="100%" autoplay playsinline><source src="data:video/mp4;base64,{video}" type="video/mp4"></video></div>', unsafe_allow_html=True)
+    
+    video_path = "midiapositiva.mp4" if st.session_state.feedback == "positivo" else "midianegativa.mp4"
+    
+    if os.path.exists(video_path):
+        st.video(video_path, autoplay=True)
+    else:
+        st.warning(f"O arquivo {video_path} não foi encontrado.")
     
     if st.button("PRÓXIMA ETAPA ➔", use_container_width=True):
         st.session_state.feedback = None
@@ -85,15 +77,19 @@ if st.session_state.feedback:
 if st.session_state.fase == 0:
     st.markdown('<div class="main-title">ANALISTERO</div>', unsafe_allow_html=True)
     if st.button("🔓 INICIAR MÓDULO SIGMA", use_container_width=True): 
-        st.session_state.fase = 1; st.rerun()
+        st.session_state.fase = 1
+        st.rerun()
 
 elif st.session_state.fase == 1:
     st.markdown('<div class="box-enunciado"><b>Explicação:</b> vamos exercitar média, mediana, erro absoluto e relativo, exatidão e precisão. Lembre-se, a média é a soma dos valores das amostras dividido por todos os números de amostras.</div>', unsafe_allow_html=True)
     st.markdown('<div class="box-enunciado"><b>1° questão:</b> Analistas determinaram a massa atômica do lítio e coletaram os seguintes dados: amostra 6,936 g/mol; 6,942 g/mol; 6,934 g/mol; 6,940 g/mol. Calcule a massa atômica média das amostras.</div>', unsafe_allow_html=True)
     resp = st.radio("Escolha:", ["a) 6,938 g/mol", "b) 6,940 g/mol", "c) 6,936 g/mol", "d) 6,942 g/mol"])
     if st.button("VERIFICAR"):
-        if "a)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
-        else: st.session_state.feedback = "negativo"
+        if "a)" in resp: 
+            st.session_state.pontos += 10
+            st.session_state.feedback = "positivo"
+        else: 
+            st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 2:
@@ -101,8 +97,11 @@ elif st.session_state.fase == 2:
     st.markdown('<div class="box-enunciado"><b>2° questão:</b> Analistas determinaram a massa atômica do lítio e coletaram os seguintes dados: amostra 6,936 g/mol; 6,942 g/mol; 6,934 g/mol; 6,940 g/mol. Encontre a mediana para a massa atômica.</div>', unsafe_allow_html=True)
     resp = st.radio("Escolha:", ["a) 6,940 g/mol", "b) 6,938 g/mol", "c) 6,936 g/mol", "d) 6,942 g/mol"])
     if st.button("VERIFICAR"):
-        if "b)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
-        else: st.session_state.feedback = "negativo"
+        if "b)" in resp: 
+            st.session_state.pontos += 10
+            st.session_state.feedback = "positivo"
+        else: 
+            st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 3:
@@ -110,8 +109,11 @@ elif st.session_state.fase == 3:
     st.markdown('<div class="box-enunciado"><b>3° questão:</b> Considerando que o valor atualmente aceito para a massa atômica do lítio seja 6,941g/mol, calcule o erro absoluto. (Considere a média de 6,938 g/mol)</div>', unsafe_allow_html=True)
     resp = st.radio("Alternativas:", ["a) 0,009", "b) 0,010", "c) 0,003", "d) 0,08"])
     if st.button("VERIFICAR"):
-        if "c)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
-        else: st.session_state.feedback = "negativo"
+        if "c)" in resp: 
+            st.session_state.pontos += 10
+            st.session_state.feedback = "positivo"
+        else: 
+            st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 4:
@@ -119,18 +121,27 @@ elif st.session_state.fase == 4:
     st.markdown('<div class="box-enunciado"><b>4° questão:</b> Considerando que o valor atualmente aceito para a massa atômica do lítio seja 6,941g/mol, calcule o erro relativo.</div>', unsafe_allow_html=True)
     resp = st.radio("Alternativas:", ["a) 0,07%", "b) 0,010%", "c) 0,03%", "d) 0,043%"])
     if st.button("VERIFICAR"):
-        if "d)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
-        else: st.session_state.feedback = "negativo"
+        if "d)" in resp: 
+            st.session_state.pontos += 10
+            st.session_state.feedback = "positivo"
+        else: 
+            st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 5:
     st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se o que é exatidão e o que é precisão? A exatidão é sobre suas amostras serem próximas ao padrão verdadeiro, precisão é sobre suas amostras estarem próximas umas às outras em valores.</div>', unsafe_allow_html=True)
-    st.image("questao5.drawio.png", caption="Observe o alvo (d)")
+    if os.path.exists("questao5.drawio.png"):
+        st.image("questao5.drawio.png", caption="Observe o alvo (d)")
+    else:
+        st.error("Imagem 'questao5.drawio.png' não encontrada.")
     st.markdown('<div class="box-enunciado"><b>5° questão:</b> imagem do alvo com baixa precisão e alta exatidão. qual a opção correta?</div>', unsafe_allow_html=True)
     resp = st.radio("Escolha:", ["a) baixa precisão e baixa exatidão", "b) alta precisão e alta exatidão", "c) alta precisão e baixa exatidão", "d) baixa precisão e alta exatidão"])
     if st.button("VERIFICAR"):
-        if "d)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
-        else: st.session_state.feedback = "negativo"
+        if "d)" in resp: 
+            st.session_state.pontos += 10
+            st.session_state.feedback = "positivo"
+        else: 
+            st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 6:
@@ -138,8 +149,11 @@ elif st.session_state.fase == 6:
     st.markdown('<div class="box-enunciado"><b>6° questão:</b> desafio: As análises de várias preparações alimentares envolvendo a determinação de potássio geraram os seguintes dados: 1 analista descobriu os seguintes valores 5,15, 5,03, 5,04, 5,18, 5,20.</div>', unsafe_allow_html=True)
     res = st.text_input("Resultado (Ex: 0.08):").replace(",", ".")
     if st.button("VERIFICAR"):
-        if "0.08" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
-        else: st.session_state.feedback = "negativo"
+        if "0.08" in res: 
+            st.session_state.pontos += 15
+            st.session_state.feedback = "positivo"
+        else: 
+            st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 7:
@@ -147,8 +161,11 @@ elif st.session_state.fase == 7:
     st.markdown('<div class="box-enunciado"><b>7° questão:</b> desafio: As análises de várias preparações alimentares envolvendo a determinação de potássio geraram os seguintes dados: 1 analista descobriu os seguintes valores 7,18; 7,17; 6,97 (mg/L).</div>', unsafe_allow_html=True)
     res = st.text_input("Resultado (Ex: 0.11):").replace(",", ".")
     if st.button("VERIFICAR"):
-        if "0.11" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
-        else: st.session_state.feedback = "negativo"
+        if "0.11" in res: 
+            st.session_state.pontos += 15
+            st.session_state.feedback = "positivo"
+        else: 
+            st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 8:
@@ -156,8 +173,11 @@ elif st.session_state.fase == 8:
     st.markdown('<div class="box-enunciado"><b>8° questão:</b> Usando os dados da questão anterior (7,18; 7,17; 6,97), calcule a variância.</div>', unsafe_allow_html=True)
     res = st.text_input("Resultado (Ex: 0.014):").replace(",", ".")
     if st.button("VERIFICAR"):
-        if "0.01" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
-        else: st.session_state.feedback = "negativo"
+        if "0.01" in res: 
+            st.session_state.pontos += 15
+            st.session_state.feedback = "positivo"
+        else: 
+            st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase >= 9:
@@ -165,3 +185,4 @@ elif st.session_state.fase >= 9:
     st.markdown(f'<div class="main-title">PARABÉNS ANALISTA ALPHA!<br>PONTUAÇÃO FINAL: {st.session_state.pontos} XP</div>', unsafe_allow_html=True)
     nome = st.text_input("Digite seu nome para o ranking:")
     if st.button("SALVAR MEU RESULTADO"):
+        st.success(f"Parabéns {nome}! O professor recebeu seus {st.session_state.pontos} pontos.")
