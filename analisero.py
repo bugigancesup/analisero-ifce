@@ -11,12 +11,11 @@ st.set_page_config(page_title="ANALISTERO - IFCE", layout="centered")
 def salvar_no_sheets(nome, pontos):
     try:
         scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-        # Usa os segredos configurados no Streamlit Cloud
         creds_dict = st.secrets["gcp_service_account"]
         credentials = Credentials.from_service_account_info(creds_dict, scopes=scope)
         client = gspread.authorize(credentials)
         
-        # Abre a planilha pelo nome (certifique-se que o nome está correto)
+        # Tenta abrir a planilha. Certifique-se que o e-mail da conta de serviço é EDITOR nela.
         sheet = client.open("analisero_dados").sheet1
         sheet.append_row([nome, pontos])
         return True
@@ -97,7 +96,7 @@ if st.session_state.fase == 0:
         st.rerun()
 
 elif st.session_state.fase == 1:
-    st.markdown('<div class="box-enunciado"><b>Explicação:</b> vamos exercitar média, mediana, erro absoluto e relativo, exatidão e precisão. Lembre-se, a média é a soma dos valores das amostras dividido por todos os números de amostras.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>lição 1 : explicação:</b> vamos exercitar média, mediana, erro absoluto e relativo, exatidão e precisão. Lembre-se, a média é a soma dos valores das amostras dividido por todos os números de amostras.</div>', unsafe_allow_html=True)
     st.markdown('<div class="box-enunciado"><b>1° questão:</b> Analistas determinaram a massa atômica do lítio e coletaram os seguintes dados: amostra 6,936 g/mol; 6,942 g/mol; 6,934 g/mol; 6,940 g/mol. Calcule a massa atômica média das amostras.</div>', unsafe_allow_html=True)
     resp = st.radio("Escolha:", ["a) 6,938 g/mol", "b) 6,940 g/mol", "c) 6,936 g/mol", "d) 6,942 g/mol"])
     if st.button("VERIFICAR"):
@@ -106,7 +105,7 @@ elif st.session_state.fase == 1:
         st.rerun()
 
 elif st.session_state.fase == 2:
-    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se, mediana é o valor central dentro de um número de amostras, se for conjunto ímpar é o valor do meio, se for conjunto par é a média dos dois valores centrais.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>lição 2: explicação:</b> Lembre-se, mediana é o valor central dentro de um número de amostras, se for conjunto ímpar é o valor do meio, se for conjunto par é a média dos dois valores centrais.</div>', unsafe_allow_html=True)
     st.markdown('<div class="box-enunciado"><b>2° questão:</b> Analistas determinaram a massa atômica do lítio e coletaram os seguintes dados: amostra 6,936 g/mol; 6,942 g/mol; 6,934 g/mol; 6,940 g/mol. Encontre a mediana para a massa atômica.</div>', unsafe_allow_html=True)
     resp = st.radio("Escolha:", ["a) 6,940 g/mol", "b) 6,938 g/mol", "c) 6,936 g/mol", "d) 6,942 g/mol"])
     if st.button("VERIFICAR"):
@@ -115,8 +114,8 @@ elif st.session_state.fase == 2:
         st.rerun()
 
 elif st.session_state.fase == 3:
-    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se, o erro absoluto é quando o sistema considerou 1 medida como padrão verdadeiro, e qualquer diferença entre sua amostra e o padrão é considerado o erro absoluto.</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>3° questão:</b> Considerando que o valor atualmente aceito para a massa atômica do lítio seja 6,941g/mol, calcule o erro absoluto. (Considere a média de 6,938 g/mol)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>lição 3 explicação:</b> Lembre-se, o erro absoluto é quando o sistema considerou 1 medida como padrão verdadeiro, e qualquer diferença entre sua amostra e o padrão é considerado o erro absoluto.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>3° questão:</b> Considerando que o valor atualmente aceito para a massa atômica do lítio seja 6,941g/mol, calcule o erro absoluto.</div>', unsafe_allow_html=True)
     resp = st.radio("Alternativas:", ["a) 0,009", "b) 0,010", "c) 0,003", "d) 0,08"])
     if st.button("VERIFICAR"):
         if "c)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
@@ -124,7 +123,7 @@ elif st.session_state.fase == 3:
         st.rerun()
 
 elif st.session_state.fase == 4:
-    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se, o erro relativo de uma medida é o erro absoluto dividido pelo valor verdadeiro. geralmente é expresso em porcentagem por isso multiplica por 100.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>lição 4 explicação:</b> Lembre-se, o erro relativo de uma medida é o erro absoluto dividido pelo valor verdadeiro. geralmente é expresso em porcentagem por isso multiplica por 100.</div>', unsafe_allow_html=True)
     st.markdown('<div class="box-enunciado"><b>4° questão:</b> Considerando que o valor atualmente aceito para a massa atômica do lítio seja 6,941g/mol, calcule o erro relativo.</div>', unsafe_allow_html=True)
     resp = st.radio("Alternativas:", ["a) 0,07%", "b) 0,010%", "c) 0,03%", "d) 0,043%"])
     if st.button("VERIFICAR"):
@@ -133,10 +132,10 @@ elif st.session_state.fase == 4:
         st.rerun()
 
 elif st.session_state.fase == 5:
-    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se o que é exatidão e o que é precisão? A exatidão é sobre suas amostras serem próximas ao padrão verdadeiro, precisão é sobre suas amostras estarem próximas umas às outras em valores.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>lição 5 explicação:</b> Lembre-se o que é exatidão e o que é precisão? A exatidão é sobre suas amostras serem próximas ao padrão verdadeiro, precisão é sobre suas amostras estarem próximas umas às outras em valores.</div>', unsafe_allow_html=True)
     if os.path.exists("questao5.drawio.png"):
-        st.image("questao5.drawio.png", caption="Observe o alvo (d)")
-    st.markdown('<div class="box-enunciado"><b>5° questão:</b> imagem do alvo com baixa precisão e alta exatidão. qual a opção correta?</div>', unsafe_allow_html=True)
+        st.image("questao5.drawio.png", caption="Observe o alvo")
+    st.markdown('<div class="box-enunciado"><b>5°questão:</b> imagem do alvo com baixa precisão e alta exatidão. qual a opção correta? 4 imagens</div>', unsafe_allow_html=True)
     resp = st.radio("Escolha:", ["a) baixa precisão e baixa exatidão", "b) alta precisão e alta exatidão", "c) alta precisão e baixa exatidão", "d) baixa precisão e alta exatidão"])
     if st.button("VERIFICAR"):
         if "d)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
@@ -144,8 +143,8 @@ elif st.session_state.fase == 5:
         st.rerun()
 
 elif st.session_state.fase == 6:
-    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se Desvio Padrão é quando todos os dados das amostras tem alguma distância do valor médio do conjunto...</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>6° questão:</b> desafio: As análises de várias preparações alimentares envolvendo a determinação de potássio geraram os seguintes dados: 5,15, 5,03, 5,04, 5,18, 5,20.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>lição 6 explicação:</b> Lembre-se Desvio Padrão é quando todos os dados das amostras tem alguma distância do valor médio do conjunto. A fórmula  é dada por s = √ ( valor da amostra - valor médio)² / número de amostras - 1.<br>passo 1: após identificar dos dados, calcule a média. passo 2: para a cada amostra ( valor das amostras - valor médio)² passo 3: divida pelo número de amostras -1. passo 4: tire a raiz, prontinho.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>6° questão:</b> desafio: As análises de várias preparações alimentares envolvendo a determinação de potássio geraram os seguintes dados: 1 analista  descobriu os seguintes valores 5,15, 5,03, 5,04, 5,18, 5,20.</div>', unsafe_allow_html=True)
     res = st.text_input("Resultado (Ex: 0.08):").replace(",", ".")
     if st.button("VERIFICAR"):
         if "0.08" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
@@ -153,8 +152,8 @@ elif st.session_state.fase == 6:
         st.rerun()
 
 elif st.session_state.fase == 7:
-    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se Desvio Padrão...</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>7° questão:</b> desafio: valores 7,18; 7,17; 6,97 (mg/L).</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>lição 7 explicação:</b> Lembre-se Desvio Padrão é quando todos os dados das amostras tem alguma distância do valor médio do conjunto. A fórmula  é dada por s = √ ( valor da amostra - valor médio)² / número de amostras - 1.<br>passo 1: após identificar dos dados, calcule a média. passo 2: para cada amostra ( valor das amostras - valor médio)² passo 3: divida pelo número de amostras -1. passo 4: tire a raiz, prontinho.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>7° questão:</b> desafio: As análises de várias preparações alimentares envolvendo a determinação de potássio geraram os seguintes dados: 1 analista  descobriu os seguintes valores 7,18; 7,17; 6,97 (mg/L).</div>', unsafe_allow_html=True)
     res = st.text_input("Resultado (Ex: 0.11):").replace(",", ".")
     if st.button("VERIFICAR"):
         if "0.11" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
@@ -162,8 +161,8 @@ elif st.session_state.fase == 7:
         st.rerun()
 
 elif st.session_state.fase == 8:
-    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se Variância...</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>8° questão:</b> Usando os dados da questão anterior, calcule a variância.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>lição 8: explicação:</b> Lembre-se Variança é quando todos os dados das amostras tem alguma distância do valor médio do conjunto. Qual a diferença entre o desvio padrão? apenas não tem mais raiz. Para o tratamento estatístico ela é melhor.<br>passo 1: após identificar dos dados, calcule a média. passo 2: para cada amostra ( valor das amostras - valor médio)² passo 3: divida pelo número de amostras -1.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>8° questão:</b> Usando os dados da questão anterior (7,18; 7,17; 6,97), calcule a variância.</div>', unsafe_allow_html=True)
     res = st.text_input("Resultado (Ex: 0.012):").replace(",", ".")
     if st.button("VERIFICAR"):
         if "0.01" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
@@ -178,6 +177,6 @@ elif st.session_state.fase >= 9:
         if nome_usuario:
             sucesso = salvar_no_sheets(nome_usuario, st.session_state.pontos)
             if sucesso:
-                st.success(f"Excelente, {nome_usuario}! Dados salvos com sucesso.")
+                st.success(f"Excelente, {nome_usuario}! Dados salvos com sucesso na planilha.")
         else:
             st.warning("Por favor, digite seu nome.")
