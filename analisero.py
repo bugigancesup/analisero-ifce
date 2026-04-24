@@ -31,9 +31,7 @@ if 'pos_b64' not in st.session_state:
 st.markdown("""
     <style>
     .main-title { text-align: center; font-size: 40px; font-weight: bold; border: 2px solid black; padding: 15px; margin-bottom: 20px; background-color: #f0f2f6; }
-    .box-modulo { text-align: center; border: 1px solid black; padding: 10px; margin-bottom: 15px; font-size: 14px; background-color: #ffffff; }
-    .box-enunciado { border: 1px solid black; border-radius: 25px; padding: 20px; margin-bottom: 15px; background-color: white; color: black; font-size: 16px; }
-    .highlight-verde { background-color: #00FF00; padding: 2px 5px; font-weight: bold; }
+    .box-enunciado { border: 1px solid black; border-radius: 15px; padding: 20px; margin-bottom: 15px; background-color: white; color: black; font-size: 16px; line-height: 1.5; }
     .visor-verde { background-color: #90EE90; padding: 15px; border-radius: 8px; border: 2px solid #006400; 
                    text-align: right; font-family: monospace; font-size: 22px; color: black; min-height: 50px; }
     </style>
@@ -67,11 +65,11 @@ with st.sidebar:
 if st.session_state.feedback:
     cor = "#28a745" if st.session_state.feedback == "positivo" else "#dc3545"
     video = st.session_state.pos_b64 if st.session_state.feedback == "positivo" else st.session_state.neg_b64
-    st.markdown(f"<h1 style='text-align:center; color:{cor};'>{'VOCÊ ACERTOU!' if cor=='#28a745' else 'TENTE NA PRÓXIMA!'}</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='text-align:center; color:{cor};'>{'VOCÊ ACERTOU!' if cor=='#28a745' else 'TENTE NOVAMENTE!'}</h1>", unsafe_allow_html=True)
     if video:
         st.markdown(f'<div style="text-align:center;"><video width="100%" autoplay playsinline><source src="data:video/mp4;base64,{video}" type="video/mp4"></video></div>', unsafe_allow_html=True)
     
-    if st.button("AVANÇAR ➔", use_container_width=True):
+    if st.button("PRÓXIMA ETAPA ➔", use_container_width=True):
         st.session_state.feedback = None
         st.session_state.fase += 1
         st.rerun()
@@ -83,83 +81,82 @@ if st.session_state.fase == 0:
     if st.button("🔓 INICIAR MÓDULO SIGMA", use_container_width=True): 
         st.session_state.fase = 1; st.rerun()
 
-# QUESTÕES
 elif st.session_state.fase == 1:
-    st.markdown('<div class="box-enunciado"><b>Lição 1:</b> Vamos exercitar média, mediana, erro absoluto e relativo, exatidão e precisão. Lembre-se, a média é a soma dos valores das amostras dividido por todos os números de amostras.</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>1° questão:</b> Analistas determinaram a massa atômica do lítio: 6,936; 6,942; 6,934; 6,940 g/mol. Calcule a massa atômica média.</div>', unsafe_allow_html=True)
-    resp = st.radio("Escolha:", ["6,938 g/mol", "6,940 g/mol", "6,936 g/mol", "6,942 g/mol"])
+    st.markdown('<div class="box-enunciado"><b>Explicação:</b> vamos exercitar média, mediana, erro absoluto e relativo, exatidão e precisão. Lembre-se, a média é a soma dos valores das amostras dividido por todos os números de amostras.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>1° questão:</b> Analistas determinaram a massa atômica do lítio e coletaram os seguintes dados: amostra 6,936 g/mol; 6,942 g/mol; 6,934 g/mol; 6,940 g/mol. Calcule a massa atômica média das amostras.</div>', unsafe_allow_html=True)
+    resp = st.radio("Escolha:", ["a) 6,938 g/mol", "b) 6,940 g/mol", "c) 6,936 g/mol", "d) 6,942 g/mol"])
     if st.button("VERIFICAR"):
-        if "6,938" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
+        if "a)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 2:
-    st.markdown('<div class="box-enunciado"><b>Lição 2:</b> Lembre-se, mediana é o valor central. Se for conjunto ímpar é o valor do meio, se for conjunto par é a média dos dois valores centrais.</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>2° questão:</b> Dados: 6,936; 6,942; 6,934; 6,940. Encontre a mediana.</div>', unsafe_allow_html=True)
-    resp = st.radio("Escolha:", ["6,940 g/mol", "6,938 g/mol", "6,936 g/mol", "6,942 g/mol"])
+    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se, mediana é o valor central dentro de um número de amostras, se for conjunto ímpar é o valor do meio, se for conjunto par é a média dos dois valores centrais.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>2° questão:</b> Analistas determinaram a massa atômica do lítio e coletaram os seguintes dados: amostra 6,936 g/mol; 6,942 g/mol; 6,934 g/mol; 6,940 g/mol. Encontre a mediana para a massa atômica.</div>', unsafe_allow_html=True)
+    resp = st.radio("Escolha:", ["a) 6,940 g/mol", "b) 6,938 g/mol", "c) 6,936 g/mol", "d) 6,942 g/mol"])
     if st.button("VERIFICAR"):
-        if "6,938" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
+        if "b)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 3:
-    st.markdown('<div class="box-enunciado"><b>Lição 3:</b> O erro absoluto é a diferença entre sua amostra e o padrão verdadeiro.</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>3° questão:</b> Se o valor aceito é 6,941 g/mol e a amostra média foi 6,938 g/mol, calcule o erro absoluto (use valor positivo).</div>', unsafe_allow_html=True)
-    resp = st.radio("Alternativas:", ["0,003", "0,010", "0,005", "0,08"])
+    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se, o erro absoluto é quando o sistema considerou 1 medida como padrão verdadeiro, e qualquer diferença entre sua amostra e o padrão é considerado o erro absoluto.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>3° questão:</b> Considerando que o valor atualmente aceito para a massa atômica do lítio seja 6,941g/mol, calcule o erro absoluto. (Considere a média de 6,938 g/mol)</div>', unsafe_allow_html=True)
+    resp = st.radio("Alternativas:", ["a) 0,009", "b) 0,010", "c) 0,003", "d) 0,08"])
     if st.button("VERIFICAR"):
-        if "0,003" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
+        if "c)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 4:
-    st.markdown('<div class="box-enunciado"><b>Lição 4:</b> O erro relativo é o erro absoluto dividido pelo valor verdadeiro, multiplicado por 100 para ter a porcentagem.</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>4° questão:</b> Valor aceito: 6,941. Erro absoluto: 0,003. Calcule o erro relativo.</div>', unsafe_allow_html=True)
-    resp = st.radio("Alternativas:", ["0,043%", "0,010%", "0,03%", "0,072%"])
+    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se, o erro relativo de uma medida é o erro absoluto dividido pelo valor verdadeiro. geralmente é expresso em porcentagem por isso multiplica por 100.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>4° questão:</b> Considerando que o valor atualmente aceito para a massa atômica do lítio seja 6,941g/mol, calcule o erro relativo.</div>', unsafe_allow_html=True)
+    resp = st.radio("Alternativas:", ["a) 0,07%", "b) 0,010%", "c) 0,03%", "d) 0,043%"])
     if st.button("VERIFICAR"):
-        if "0,043%" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
+        if "d)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 5:
-    st.markdown('<div class="box-enunciado"><b>Lição 5:</b> Exatidão é proximidade ao padrão. Precisão é proximidade entre as amostras.</div>', unsafe_allow_html=True)
-    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Accuracy_and_precision_pt.svg/800px-Accuracy_and_precision_pt.svg.png", caption="Observe o alvo D")
-    st.markdown('<div class="box-enunciado"><b>5° questão:</b> No alvo (d), os pontos estão próximos ao centro mas espalhados. Isso indica:</div>', unsafe_allow_html=True)
-    resp = st.radio("Escolha:", ["baixa precisão e baixa exatidão", "alta precisão e alta exatidão", "alta precisão e baixa exatidão", "baixa precisão e alta exatidão"])
+    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se o que é exatidão e o que é precisão? A exatidão é sobre suas amostras serem próximas ao padrão verdadeiro, precisão é sobre suas amostras estarem próximas umas às outras em valores.</div>', unsafe_allow_html=True)
+    st.image("questao5.drawio.png", caption="Observe o alvo (d)")
+    st.markdown('<div class="box-enunciado"><b>5° questão:</b> imagem do alvo com baixa precisão e alta exatidão. qual a opção correta?</div>', unsafe_allow_html=True)
+    resp = st.radio("Escolha:", ["a) baixa precisão e baixa exatidão", "b) alta precisão e alta exatidão", "c) alta precisão e baixa exatidão", "d) baixa precisão e alta exatidão"])
     if st.button("VERIFICAR"):
-        if "baixa precisão e alta exatidão" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
+        if "d)" in resp: st.session_state.pontos += 10; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 6:
-    st.markdown('<div class="box-enunciado"><b>Lição 6:</b> Desvio Padrão (s). 1.Média; 2.(amostra-média)²; 3.Soma; 4.Divida por n-1; 5.Raiz.</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>6° questão:</b> Valores de potássio: 5,15; 5,03; 5,04; 5,18; 5,20. Qual o desvio padrão?</div>', unsafe_allow_html=True)
-    res = st.text_input("Resultado (ex: 0.08):")
+    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se Desvio Padrão é quando todos os dados das amostras tem alguma distância do valor médio do conjunto. A fórmula é dada por s = √ ( valor da amostra - valor médio)² / número de amostras - 1.<br><br>passo 1: após identificar dos dados, calcule a média. passo 2: para a cada amostra ( valor das amostras - valor médio)² passo 3: divida pelo número de amostras -1. passo 4: tire a raiz, prontinho.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>6° questão:</b> desafio: As análises de várias preparações alimentares envolvendo a determinação de potássio geraram os seguintes dados: 1 analista descobriu os seguintes valores 5,15, 5,03, 5,04, 5,18, 5,20.</div>', unsafe_allow_html=True)
+    res = st.text_input("Resultado (Ex: 0.08):")
     if st.button("VERIFICAR"):
         if "0.08" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 7:
-    st.markdown('<div class="box-enunciado"><b>Lição 7:</b> Repetindo o processo de Desvio Padrão.</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>7° questão:</b> Valores: 7,18; 7,17; 6,97 mg/L. Calcule o Desvio Padrão.</div>', unsafe_allow_html=True)
-    res = st.text_input("Resultado (ex: 0.11):")
+    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se Desvio Padrão é quando todos os dados das amostras tem alguma distância do valor médio do conjunto. A fórmula é dada por s = √ ( valor da amostra - valor médio)² / número de amostras - 1.<br><br>passo 1: após identificar dos dados, calcule a média. passo 2: para cada amostra ( valor das amostras - valor médio)² passo 3: divida pelo número de amostras -1. passo 4: tire a raiz, prontinho.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>7° questão:</b> desafio: As análises de várias preparações alimentares envolvendo a determinação de potássio geraram os seguintes dados: 1 analista descobriu os seguintes valores 7,18; 7,17; 6,97 (mg/L).</div>', unsafe_allow_html=True)
+    res = st.text_input("Resultado (Ex: 0.11):")
     if st.button("VERIFICAR"):
         if "0.11" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase == 8:
-    st.markdown('<div class="box-enunciado"><b>Lição 8:</b> Variância (s²) é o desvio padrão ao quadrado (sem a raiz).</div>', unsafe_allow_html=True)
-    st.markdown('<div class="box-enunciado"><b>8° questão:</b> Se o desvio padrão s foi 0.11, qual a variância s²?</div>', unsafe_allow_html=True)
-    res = st.text_input("Resultado (ex: 0.012):")
+    st.markdown('<div class="box-enunciado"><b>Explicação:</b> Lembre-se Variança é quando todos os dados das amostras tem alguma distância do valor médio do conjunto. Qual a diferença entre o desvio padrão? apenas não tem mais raiz. Para o tratamento estatístico ela é melhor.<br><br>passo 1: após identificar dos dados, calcule a média. passo 2: para cada amostra ( valor das amostras - valor médio)² passo 3: divida pelo número de amostras -1.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="box-enunciado"><b>8° questão:</b> Usando os dados da questão anterior (7,18; 7,17; 6,97), calcule a variância.</div>', unsafe_allow_html=True)
+    res = st.text_input("Resultado (Ex: 0.014):")
     if st.button("VERIFICAR"):
-        if "0.012" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
+        if "0.01" in res: st.session_state.pontos += 15; st.session_state.feedback = "positivo"
         else: st.session_state.feedback = "negativo"
         st.rerun()
 
 elif st.session_state.fase >= 9:
     st.balloons()
-    st.markdown(f'<div class="main-title">PARABÉNS ANALISTA!<br>PONTUAÇÃO: {st.session_state.pontos} XP</div>', unsafe_allow_html=True)
-    nome = st.text_input("Seu nome:")
-    if st.button("FINALIZAR"):
-        st.success(f"Excelente, {nome}! Você concluiu o treinamento.")
+    st.markdown(f'<div class="main-title">PARABÉNS ANALISTA ALPHA!<br>PONTUAÇÃO FINAL: {st.session_state.pontos} XP</div>', unsafe_allow_html=True)
+    nome = st.text_input("Digite seu nome para o ranking:")
+    if st.button("SALVAR MEU RESULTADO"):
+        st.success(f"Parabéns {nome}! O professor recebeu seus {st.session_state.pontos} pontos.")
