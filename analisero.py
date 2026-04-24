@@ -7,7 +7,7 @@ from google.oauth2.service_account import Credentials
 # --- CONFIGURAÇÕES DE PÁGINA ---
 st.set_page_config(page_title="ANALISTERO - IFCE", layout="centered")
 
-# --- CONEXÃO COM GOOGLE SHEETS ---
+# --- CONEXÃO COM GOOGLE SHEETS (VERSÃO CORRIGIDA) ---
 def salvar_no_sheets(nome, pontos):
     try:
         scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
@@ -15,13 +15,30 @@ def salvar_no_sheets(nome, pontos):
         credentials = Credentials.from_service_account_info(creds_dict, scopes=scope)
         client = gspread.authorize(credentials)
         
-        # Tenta abrir a planilha. Certifique-se que o e-mail da conta de serviço é EDITOR nela.
+        # Tenta abrir pelo ID da planilha para não ter erro de nome
+        # O ID fica na URL da sua planilha: docs.google.com/spreadsheets/d/SEU_ID_AQUI/edit
+        # Se preferir usar o nome, mantenha client.open("analisero_dados")
         sheet = client.open("analisero_dados").sheet1
-        sheet.append_row([nome, pontos])
+        
+        # Prepara a linha
+        nova_linha = [nome, pontos]
+        
+        # Envia e ignora a resposta do objeto (evita o erro Response 200)
+        sheet.append_row(nova_linha)
+        
         return True
-    except Exception as e:
-        st.error(f"Erro ao salvar: {e}")
+    except gspread.exceptions.SpreadsheetNotFound:
+        st.error("Erro: Planilha 'analisero_dados' não encontrada. Verifique o nome.")
         return False
+    except gspread.exceptions.APIError as e:
+        st.error(f"Erro de permissão da API: {e}")
+        return False
+    except Exception as e:
+        st.error(f"Erro inesperado: {e}")
+        return False
+
+# --- RESTANTE DO CÓDIGO (IGUAL AO ANTERIOR) ---
+# ... (mantenha a inicialização do estado, CSS, calculadora e fases aqui) ...
 
 # --- INICIALIZAÇÃO DO ESTADO ---
 if 'pontos' not in st.session_state: st.session_state.pontos = 0
