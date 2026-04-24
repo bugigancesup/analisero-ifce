@@ -165,4 +165,3 @@ elif st.session_state.fase >= 9:
     st.markdown(f'<div class="main-title">PARABÉNS ANALISTA ALPHA!<br>PONTUAÇÃO FINAL: {st.session_state.pontos} XP</div>', unsafe_allow_html=True)
     nome = st.text_input("Digite seu nome para o ranking:")
     if st.button("SALVAR MEU RESULTADO"):
-        st.success(f"Parabéns {nome}! O professor recebeu seus {st.session_state.pontos} pontos.")
